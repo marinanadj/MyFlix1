@@ -37,5 +37,4 @@ render() {
     }
 
 }
-        
-export default MainView;
+    
