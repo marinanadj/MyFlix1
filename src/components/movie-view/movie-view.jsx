@@ -1,88 +1,61 @@
+// myFlix-client/src/main-view/main-view.jsx
 import React from 'react';
+import axios from 'axios';
 
-export class MovieView extends React.Component {
+import { LoginView } from '../login-view/login-view';
+import { MovieCard } from '../movie-card/movie-card';
+import { MovieView } from '../movie-view/movie-view';
 
-  keypressCallback(event) {
-    console.log(event.key);
-}
-
-//Add Keypress event listener
-componentDidMount() {
-    document.addEventListener('keypress', this.keypressCallback);
-}
-
-//Unmount event listener
-componentWillUnmount() {
-    document.removeEventListener('keypress', this.keypressCallback);
-}
-    render()  {
-      const { movie, onBackClick } = this.props;
-  
-      return (
-  
-        <Container fluid className="moviesContainer">
-          <Row>
-            <Col>
-              <div className="movie-view">
-
-                <div className="movie-poster">
-                  <img src={movie.ImagePath} crossOrigin="true" />
-                </div>
-                <div className="movie-title">
-                  <span className="title">Title: </span>
-                  <span className="value">{movie.Title}</span>
-                </div>
-
-                <div className="movie-description">
-                  <span className="description">Description: </span>
-                  <span className="value">{movie.Description}</span>
-                </div>
-                <div className="movie-genre">
-                  <span className="genre">Genre: </span>
-                  <span className="value">{movie.Genre.Name}</span>
-                </div>
-                <div className="genre-description">
-                  <span className="genre">Description: </span>
-                  <span className="value">{movie.Genre.Description}</span>
-                </div>
-                <div className="movie-director">
-                  <span className="director">Director: </span>
-                  <span className="value">{movie.Director.Name}</span>
-                </div>
-                <div className="director-bio">
-                  <span className="director">Bio: </span>
-                  <span className="value">{movie.Director.Bio}</span>
-                </div>
-
-                <div className="movie-button-div">
-                  <Button className="movie-button" bg="dark" variant="dark" onClick={() => {
-                       onBackClick(null); 
-                       }}>
-                           Back</Button>
-                </div>
-                
-  
-              </div>
-            </Col>
-          </Row>
-          
-         </Container>
-      );
-    }
+constructor() {
+  super();
+  this.state = {
+      movies: [],
+      selectedMovie: null,
+      user: null
+    };
   }
 
-MovieView.propTypes = {
-  movie: PropTypes.shape({
-      ImagePath: PropTypes.string.isRequired,
-      Title: PropTypes.string.isRequired,
-      Description: PropTypes.string.isRequired,
-      Genre: PropTypes.shape({
-          Name: PropTypes.string.isRequired
-        }),
-        Director: PropTypes.shape({
-            Name: PropTypes.string.isRequired,
-            Bio: PropTypes.string.isRequired
-        }),
-  }).isRequired,
-  onBackClick: PropTypes.func.isRequired
-};
+  componentDidMount() {
+      axios.get('https://cinesam2022.herokuapp.com/movies')
+          .then(response => {
+              this.setState({
+                  movies: response.data
+              });
+          })
+          .catch(erorr => {
+              console.log(erorr);
+          });
+  }
+
+  // componentWillUnmount(){}
+
+  setSelectedMovie(movie) {
+    this.setState({
+        selectedMovie: movie
+    });
+}
+
+onLoggedIn(user) {
+    this.setState({
+        user
+    });
+
+    render() {
+      const { movies, selectedMovie, user } = this.state;
+
+      if (!user) return <LoginView onLoggedIn={user => this.onLoggedIn(user)} />;
+      if (movies.length === 0) return <div className="main-view" />;
+      return (
+          <div className="main-view">
+              {selectedMovie
+                  ? <MovieView movie={selectedMovie} onBackClick={newSelectedMovie => {
+                      this.setSelectedMovie(newSelectedMovie);
+                  }} />
+                  : movies.map(movie => (
+                      <MovieCard key={movie._id} movie={movie} onMovieClick={(movie) => {
+                          this.setSelectedMovie(newSelectedMovie)
+                      }} />
+                  ))
+              }
+          </div>
+}

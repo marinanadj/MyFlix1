@@ -1,21 +1,19 @@
 import React from 'react';
+import propTypes from 'prop-types';
 
 export class MovieCard extends React.Component {
-  render() {
-    return <div className="movie-card">some title</div>;
-  }
-}
-render() {
-  const { movies } = this.state;
-
-  if (movies.length === 0) return <div className="main-view">The list is empty!</div>;
-
-  return (
-    <div className="main-view">
-      {movies.map(movie => <MovieCard />)}
-    </div>
-  );
+    render() {
+        const { movie, onMovieClick } = this.props;
+        return <div className="movie-card" onClick={() => { onMovieClick(movie); }}>{movie.Title}</div>;
+    }
 }
 
-
-{movies.map(movie => <MovieCard key={movie._id} movie={movie}/>)}
+MovieCard.propTypes = {
+    movie: PropTypes.shape({
+        Title: PropTypes.string.isRequired,
+        Description: PropTypes.string.isRequired,
+        ImagePath: PropTypes.string.isRequired
+    }).isRequired,
+    index: PropTypes.number.isRequired,
+    onMovieClick: PropTypes.func.isRequired
+};
