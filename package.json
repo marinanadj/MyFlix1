@@ -2,7 +2,6 @@
   "name": "myflix",
   "version": "1.0.0",
   "description": "",
-  "default": "src/index.html",
   "scripts": {
     "start": "parcel src/index.html",
     "build": "parcel build src/index.html",
