@@ -8,9 +8,9 @@ export class MainView extends React.Component {
     super();
     this.state = {
       movies: [
-        { _id: 1, Title: 'Inception', Description: 'Inception is a 2010 science fiction action film written and directed by Christopher Nolan, who also produced the film with Emma Thomas, his wife. The film stars Leonardo DiCaprio as a professional thief who steals information by infiltrating the subconscious of his targets.', ImagePath: '...'},
-        { _id: 2, Title: 'The Shawshank Redemption', Description: 'This movie, The Shawshank Redemption, starring Tim Robbins and Morgan Freeman, is an American prison drama. It is based on a novella by Stephen King. It portrays the story of a successful banker who evidences the cruelties and abuses held in prisons.', ImagePath: '...'},
-        { _id: 3, Title: 'Gladiator', Description: 'Gladiator (film) Gladiator is een Amerikaanse-Britse film uit 2000 die zich afspeelt in de Romeinse tijd. De film werd geschreven door David Franzoni en geregisseerd door Ridley Scott. Het is een fictief verhaal geïnspireerd op keizer Commodus en zijn vader Marcus Aurelius.', ImagePath: '...'}
+        { _id: 1, Title: 'Inception', Description: 'The film stars Leonardo DiCaprio as a professional thief who steals information by infiltrating the subconscious of his targets.', ImageURL: 'https://upload.wikimedia.org/wikipedia/en/2/2e/Inception_%282010%29_theatrical_poster.jpg'},
+        { _id: 2, Title: 'The Shawshank Redemption', Description: 'Shawshank Redemption tells the story of banker Andy Dufresne (Tim Robbins), who is sentenced to life in Shawshank State Penitentiary for the murders of his wife and her lover, despite his claims of innocence.', ImageURL: 'https://upload.wikimedia.org/wikipedia/en/8/81/ShawshankRedemptionMoviePoster.jpg'},
+        { _id: 3, Title: 'Gladiator', Description: 'A former Roman General sets out to exact vengeance against the corrupt emperor who murdered his family and sent him into slavery.', ImageURL: 'https://upload.wikimedia.org/wikipedia/en/f/fb/Gladiator_%282000_film_poster%29.png'},
       ],
       selectedMovie: null
     }
@@ -24,21 +24,20 @@ export class MainView extends React.Component {
 
   render() {
     const { movies, selectedMovie } = this.state;
-
-    if (selectedMovie) return <MovieView movie={selectedMovie} />;
   
-    if (movies.length === 0) return <div className="main-view">The list is empty!</div>;
+    if (movies.length === 0) return <div className="main-view" />;
   
     return (
       <div className="main-view">
         {selectedMovie
           ? <MovieView movie={selectedMovie} onBackClick={newSelectedMovie => { this.setSelectedMovie(newSelectedMovie); }}/>
           : movies.map(movie => (
-            <MovieCard key={movie._id} movie={movie} onMovieClick={(movie) => { this.setSelectedMovie(movie) }}/>
-          ))
+            <MovieCard key={movie._id} movie={movie} onMovieClick={(newSelectedMovie) => { this.setSelectedMovie(newSelectedMovie) }}/>
+         ))
         }
       </div>
     );
   }
-}
-export default MainView;
+  }
+  
+  export default MainView;
