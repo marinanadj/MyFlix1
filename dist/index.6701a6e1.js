@@ -25186,19 +25186,19 @@ class MainView extends _reactDefault.default.Component {
                 {
                     _id: 1,
                     Title: 'Inception',
-                    Description: 'desc1...',
+                    Description: 'Inception is a 2010 science fiction action film written and directed by Christopher Nolan, who also produced the film with Emma Thomas, his wife. The film stars Leonardo DiCaprio as a professional thief who steals information by infiltrating the subconscious of his targets.',
                     ImagePath: '...'
                 },
                 {
                     _id: 2,
                     Title: 'The Shawshank Redemption',
-                    Description: 'desc2...',
+                    Description: 'This movie, The Shawshank Redemption, starring Tim Robbins and Morgan Freeman, is an American prison drama. It is based on a novella by Stephen King. It portrays the story of a successful banker who evidences the cruelties and abuses held in prisons.',
                     ImagePath: '...'
                 },
                 {
                     _id: 3,
                     Title: 'Gladiator',
-                    Description: 'desc3...',
+                    Description: 'Gladiator (film) Gladiator is een Amerikaanse-Britse film uit 2000 die zich afspeelt in de Romeinse tijd. De film werd geschreven door David Franzoni en geregisseerd door Ridley Scott. Het is een fictief verhaal geïnspireerd op keizer Commodus en zijn vader Marcus Aurelius.',
                     ImagePath: '...'
                 }
             ],
