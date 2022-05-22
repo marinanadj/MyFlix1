@@ -6,3 +6,4 @@ export class MovieCard extends React.Component {
     return <div className="movie-card" onClick={() => { onMovieClick(movie); }}>{movie.Title}</div>;
   }
 }
+
