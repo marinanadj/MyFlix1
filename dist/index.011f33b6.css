@@ -1,0 +1,95 @@
+.my-flix {
+  color: steelblue;
+}
+
+.reg-form {
+  color: white;
+  height: 100%;
+}
+
+.reg-form {
+  margin-top: 100px;
+}
+
+.form-label {
+  width: 400px;
+}
+
+.btn {
+  margin-top: 5px;
+}
+
+.register-button {
+  margin-top: 20px;
+  width: 400px;
+}
+.my-flix {
+  color: steelblue;
+}
+.login-form {
+  color: white;
+  height: 100%;
+}
+
+.login-form {
+  margin-top: 100px;
+}
+
+.form-label,
+.buttons,
+.reg-button {
+  width: 400px;
+}
+.my-flix {
+  color: steelblue;
+}
+
+.poster-wrapper {
+  position: relative;
+}
+
+.fav-icon {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+}
+
+.mcard {
+  margin-bottom: 5px;
+}
+
+.mov-button {
+  width: 100%;
+}
+
+.fav-icon {
+  height: 30px;
+  width: 30px;
+}
+.my-flix {
+  color: steelblue;
+}
+
+.movie-view {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  background-color: white;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.mov-section {
+  padding-bottom: 10px;
+}
+
+.back-btn {
+  width: 100%;
+}
+
+.movie-opt button {
+  width: 100%;
+}
+
+
+
+/*# sourceMappingURL=index.011f33b6.css.map */
