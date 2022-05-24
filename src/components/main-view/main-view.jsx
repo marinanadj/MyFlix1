@@ -1,43 +1,97 @@
 import React from 'react';
+import axios from 'axios';
+import { Row, Col } from 'react-bootstrap';
+
+import { RegistrationView } from '../registration-view/registration-view';
+import { LoginView } from '../login-view/login-view';
 import { MovieCard } from '../movie-card/movie-card';
 import { MovieView } from '../movie-view/movie-view';
+import { NavigationbarView } from '../navigationbar-view/navigationbar-view';
 
+const inLogo = require('../../img/Inception.jpg');
+const tsLogo = require('../../img/ShawshankRedemption.jpg');
+const glLogo = require('../../img/Gladiator.png');
+
+//getting an array of movies
 export class MainView extends React.Component {
-
-  constructor(){
-    super();
-    this.state = {
-      movies: [
-        { _id: 1, Title: 'Inception', Description: 'The film stars Leonardo DiCaprio as a professional thief who steals information by infiltrating the subconscious of his targets.', ImageURL: 'https://upload.wikimedia.org/wikipedia/en/2/2e/Inception_%282010%29_theatrical_poster.jpg'},
-        { _id: 2, Title: 'The Shawshank Redemption', Description: 'Shawshank Redemption tells the story of banker Andy Dufresne (Tim Robbins), who is sentenced to life in Shawshank State Penitentiary for the murders of his wife and her lover, despite his claims of innocence.', ImageURL: 'https://upload.wikimedia.org/wikipedia/en/8/81/ShawshankRedemptionMoviePoster.jpg'},
-        { _id: 3, Title: 'Gladiator', Description: 'A former Roman General sets out to exact vengeance against the corrupt emperor who murdered his family and sent him into slavery.', ImageURL: 'https://upload.wikimedia.org/wikipedia/en/f/fb/Gladiator_%282000_film_poster%29.png'},
-      ],
-      selectedMovie: null
+  // code executed right when the component is created in the memory
+   constructor(){
+      super();
+        this.state = {
+             movies: [],
+             selectedMovie: null,
+             registered: null,
+             user: null            
     }
   }
-
-  setSelectedMovie(newSelectedMovie) {
-    this.setState({
+  //This will be executed after loading the page
+    componentDidMount() 
+    { axios
+      .get('http://localhost:8080/movies')
+      .then(response => {
+          this.setState({ movies: response.data });
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+  
+    //sets the selected movie state with value
+  setSelectedMovie(newSelectedMovie) 
+  { this.setState({
       selectedMovie: newSelectedMovie
     });
   }
 
+   //when user is verified set state to current user
+  onLoggedIn(user) {
+    this.setState({
+      user,
+    });
+  }
+
+  onRegister(registered) {
+    this.setState({
+      registered,
+    });
+  }
+
   render() {
-    const { movies, selectedMovie } = this.state;
-  
+    const { movies, selectedMovie, user, registered } = this.state;
+
+    //forcing a registration form for testing
+    if (registered) {
+      return <RegistrationView onRegister={(bool) => this.onRegister(bool)} />;
+    }
+
+    //if user is no logged in - force a login form
+    if (!user) {
+      return (
+        <NavigationbarView />,
+        <LoginView
+          onLoggedIn={(user) => this.onLoggedIn(user)}
+          onRegister={(bool) => this.onRegister(bool)}
+        />
+      );
+    }
+
     if (movies.length === 0) return <div className="main-view" />;
   
     return (
       <div className="main-view">
         {selectedMovie
-          ? <MovieView movie={selectedMovie} onBackClick={newSelectedMovie => { this.setSelectedMovie(newSelectedMovie); }}/>
+          ? (
+            <Row className="justify-content-md-center">
+              <Col md={8}>
+                <MovieView movie={selectedMovie} onBackClick={newSelectedMovie => { this.setSelectedMovie(newSelectedMovie); }}/>
+              </Col>
+            </Row>
+          )
           : movies.map(movie => (
-            <MovieCard key={movie._id} movie={movie} onMovieClick={(newSelectedMovie) => { this.setSelectedMovie(newSelectedMovie) }}/>
-         ))
+            <MovieCard key={movie._id} movie={movie} onMovieClick={newSelectedMovie => { this.setSelectedMovie(newSelectedMovie); }}/>
+          ))
         }
       </div>
     );
   }
-  }
-  
-  export default MainView;
+}
