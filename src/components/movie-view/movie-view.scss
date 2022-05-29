@@ -1,0 +1,22 @@
+@use '../../index.scss' as v;
+
+.movie-view {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  color: v.$primary-color;
+  background-color: white;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.mov-section {
+  padding-bottom: 10px;
+}
+
+.back-btn {
+  width: 100%;
+}
+
+.movie-opt button {
+  width: 100%;
+}

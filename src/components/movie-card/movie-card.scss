@@ -1,0 +1,19 @@
+@use '../../index.scss' as v;
+
+.app-container {
+  background-color: v.$primary-color;
+}
+
+.poster-wrapper {
+  position: relative;
+}
+
+.fav-icon {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+}
+
+.mcard {
+  margin-bottom: 5px;
+}

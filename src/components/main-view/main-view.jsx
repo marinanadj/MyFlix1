@@ -1,43 +1,280 @@
 import React from 'react';
+import axios from 'axios';
+import { BrowserRouter as Router, Route, Redirect } from 'react-router-dom';
+
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+
+//adding components to the main-view
+
+import { RegistrationView } from '../registration-view/registration-view';
+import { LoginView } from '../login-view/login-view';
 import { MovieCard } from '../movie-card/movie-card';
 import { MovieView } from '../movie-view/movie-view';
+import { DirectorView } from '../director-view/director-view';
+import { GenreView } from '../genre-view/genre-view';
+import { ProfileView } from '../profile-view/profile-view';
+import { Menubar } from '../navbar-view/navbar';
 
+import { Container } from 'react-bootstrap';
+
+//getting array of movies from remote and displaying as a list
 export class MainView extends React.Component {
-
-  constructor(){
+  constructor() {
     super();
+    //initial state for main-view
     this.state = {
-      movies: [
-        { _id: 1, Title: 'Inception', Description: 'The film stars Leonardo DiCaprio as a professional thief who steals information by infiltrating the subconscious of his targets.', ImageURL: 'https://upload.wikimedia.org/wikipedia/en/2/2e/Inception_%282010%29_theatrical_poster.jpg'},
-        { _id: 2, Title: 'The Shawshank Redemption', Description: 'Shawshank Redemption tells the story of banker Andy Dufresne (Tim Robbins), who is sentenced to life in Shawshank State Penitentiary for the murders of his wife and her lover, despite his claims of innocence.', ImageURL: 'https://upload.wikimedia.org/wikipedia/en/8/81/ShawshankRedemptionMoviePoster.jpg'},
-        { _id: 3, Title: 'Gladiator', Description: 'A former Roman General sets out to exact vengeance against the corrupt emperor who murdered his family and sent him into slavery.', ImageURL: 'https://upload.wikimedia.org/wikipedia/en/f/fb/Gladiator_%282000_film_poster%29.png'},
-      ],
-      selectedMovie: null
+      movies: [],
+      registered: null,
+      user: null,
+      favorites: null,
+    };
+    this.accessFavorites = this.accessFavorites.bind(this);
+  }
+
+  componentDidMount() {
+    let accessToken = localStorage.getItem('token');
+    if (accessToken !== null) {
+      this.setState({
+        user: localStorage.getItem('user'),
+      });
+      this.getMovies(accessToken);
+      this.getFavorites(accessToken);
     }
   }
 
+  //once authenticated - request movies from API with token - recieve array of JSONS
+  getMovies(token) {
+    axios
+      .get('http://localhost:8080/movies', {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((response) => {
+        this.setState({
+          movies: response.data,
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
+  //getting users favorite movies to populate icons
+  getFavorites(token) {
+    let user = localStorage.getItem('user');
+    axios
+      .get(`http://localhost:8080/users/${user}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((response) => {
+        console.log(response.data.FavoriteMovies);
+        this.setState({
+          favorites: response.data.FavoriteMovies,
+        });
+      })
+      .catch((e) => console.log(e));
+  }
+
+  //sets the selected movie state with value that is provided
   setSelectedMovie(newSelectedMovie) {
     this.setState({
-      selectedMovie: newSelectedMovie
+      selectedMovie: newSelectedMovie,
+    });
+  }
+
+  //allowing other component to reference favorite movies
+  accessFavorites() {
+    return this.state.favorites;
+  }
+
+  //allowing other components to update favorite movies list
+  updateFavorites(mid) {
+    let favArray = this.state.favorites;
+    if (!favArray) {
+      return;
+    }
+    if (favArray.includes(mid)) {
+      let index = favArray.indexOf(mid);
+      console.log(index);
+      favArray.splice(index, 1);
+      this.setState({
+        favorites: favArray,
+      });
+    } else {
+      this.setState({
+        favorites: [...this.state.favorites, mid],
+      });
+    }
+  }
+
+  //when user is verified set state to current user
+  onLoggedIn(userAuth) {
+    this.setState({
+      user: userAuth.user.Username,
+    });
+    localStorage.setItem('token', userAuth.token),
+      localStorage.setItem('user', userAuth.user.Username);
+    this.getMovies(userAuth.token);
+    this.getFavorites(userAuth.token);
+  }
+
+  //placeholder to force the registration page
+  onRegister(registered) {
+    this.setState({
+      registered,
     });
   }
 
   render() {
-    const { movies, selectedMovie } = this.state;
-  
-    if (movies.length === 0) return <div className="main-view" />;
-  
+    const { movies, user, favorites } = this.state;
+
+    //if a movie is selected show the Movie View details
     return (
-      <div className="main-view">
-        {selectedMovie
-          ? <MovieView movie={selectedMovie} onBackClick={newSelectedMovie => { this.setSelectedMovie(newSelectedMovie); }}/>
-          : movies.map(movie => (
-            <MovieCard key={movie._id} movie={movie} onMovieClick={(newSelectedMovie) => { this.setSelectedMovie(newSelectedMovie) }}/>
-         ))
-        }
-      </div>
+      <Router>
+        <Menubar user={user} />
+        <Container>
+          <Row className="main-view justify-content-md-center">
+            <Route
+              exact
+              path="/"
+              render={() => {
+                if (!user)
+                  return (
+                    <Col>
+                      <LoginView onLoggedIn={(user) => this.onLoggedIn(user)} />
+                    </Col>
+                  );
+                if (movies.length === 0) return <div className="main-view" />;
+                if (!favorites) return <div className="main-view" />;
+
+                return movies.map((m) => (
+                  <Col md={3} key={m._id} className="mcard">
+                    <MovieCard
+                      movie={m}
+                      isFavorite={favorites.includes(m._id)}
+                      favorites={favorites}
+                      updateFavorites={(mid) => this.updateFavorites(mid)}
+                    />
+                  </Col>
+                ));
+              }}
+            />
+
+            <Route
+              path="/register"
+              render={() => {
+                if (user) return <Redirect to="/" />;
+                return <RegistrationView />;
+              }}
+            />
+
+            <Route
+              path="/movies/:movieId"
+              render={({ match, history }) => {
+                if (!user)
+                  return (
+                    <Col>
+                      <LoginView onLoggedIn={(user) => this.onLoggedIn(user)} />
+                    </Col>
+                  );
+                return (
+                  <Col md={8}>
+                    <MovieView
+                      movie={movies.find((m) => m._id === match.params.movieId)}
+                      onBackClick={() => history.goBack()}
+                    />
+                  </Col>
+                );
+              }}
+            />
+
+            <Route
+              path="/directors/:name"
+              render={({ match, history }) => {
+                if (!user)
+                  return (
+                    <Col>
+                      <LoginView onLoggedIn={(user) => this.onLoggedIn(user)} />
+                    </Col>
+                  );
+
+                if (movies.length === 0) return <div className="main-view" />;
+                return (
+                  <Col md={12}>
+                    <DirectorView
+                      director={
+                        movies.find(
+                          (m) => m.Director.Name === match.params.name
+                        ).Director
+                      }
+                      updateFavorites={(mid) => this.updateFavorites(mid)}
+                      favorites={favorites}
+                      directorMovies={movies.filter((m) => {
+                        return m.Director.Name === match.params.name;
+                      })}
+                      accessFavorites={this.accessFavorites}
+                      onBackClick={() => history.goBack()}
+                    />
+                  </Col>
+                );
+              }}
+            />
+
+            <Route
+              path="/genres/:name"
+              render={({ match, history }) => {
+                if (!user)
+                  return (
+                    <Col>
+                      <LoginView onLoggedIn={(user) => this.onLoggedIn(user)} />
+                    </Col>
+                  );
+                if (movies.length === 0) return <div className="main-view" />;
+                return (
+                  <Col md={12}>
+                    <GenreView
+                      genre={
+                        movies.find((m) => m.Genre.Name === match.params.name)
+                          .Genre
+                      }
+                      genreMovies={movies.filter((m) => {
+                        return m.Genre.Name === match.params.name;
+                      })}
+                      accessFavorites={this.accessFavorites}
+                      updateFavorites={(mid) => this.updateFavorites(mid)}
+                      onBackClick={() => history.goBack()}
+                    />
+                  </Col>
+                );
+              }}
+            />
+            <Route
+              path={`/users/${user}`}
+              render={({ match, history }) => {
+                if (!user)
+                  return (
+                    <Col>
+                      <LoginView onLoggedIn={(user) => this.onLoggedIn(user)} />
+                    </Col>
+                  );
+                if (movies.length === 0) return <div className="main-view" />;
+                return (
+                  <Col md={8}>
+                    <ProfileView
+                      history={history}
+                      movies={movies}
+                      user={user}
+                      accessFavorites={this.accessFavorites}
+                      updateFavorites={(mid) => this.updateFavorites(mid)}
+                      onBackClick={() => history.goBack()}
+                    />
+                  </Col>
+                );
+              }}
+            />
+          </Row>
+        </Container>
+      </Router>
     );
   }
-  }
-  
-  export default MainView;
+}
