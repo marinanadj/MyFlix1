@@ -2,7 +2,7 @@ import React from 'react';
 
 import { Navbar, Container, Nav, Button, NavbarBrand } from 'react-bootstrap';
 
-import './nav-bar.scss';
+import './navbar.scss';
 
 export function Menubar({ user }) {
   const onLogOut = () => {
