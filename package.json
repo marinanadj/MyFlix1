@@ -23,11 +23,12 @@
     "repository": "^0.2.0",
     "uuid": "^8.3.2"
   },
-  "devDependencies": {
-    "@parcel/transformer-sass": "^2.6.0"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/marinanadj/MyFlix1"
+  },
+  "devDependencies": {
+    "@parcel/transformer-image": "^2.0.0-rc.0",
+    "@parcel/transformer-sass": "^2.0.0-rc.0"
   }
 }
