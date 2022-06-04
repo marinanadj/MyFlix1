@@ -1,0 +1,80 @@
+@use '../../index.scss' as v;
+
+.main-nav {
+  margin-bottom: 15px;
+}
+
+a {
+  margin-top: 5px;
+}
+
+.navbar {
+  position: relative;
+}
+
+.navbar a {
+  cursor: pointer;
+}
+
+.navbar-brand {
+  position: absolute;
+  left: 50%;
+  margin-left: -78px !important;
+  display: block;
+}
+
+.navbar-collapse a,
+.navbar-collapse button {
+  
+ ;
+  transition: color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.navbar-collapse a:hover,
+.navbar-collapse button:hover {
+  
+  color: white !important;
+  border-radius: 5px;
+  text-decoration: none !important;
+}
+
+.search-bar {
+  margin-left: 10px;
+}
+
+.anim-search {
+  opacity: 0;
+  transition: 1s opacity;
+}
+
+.fade-in {
+  opacity: 1;
+}
+
+.fade-out {
+  opacity: 0;
+}
+
+.main-header-link,
+.main-header-link:hover {
+  color: black;
+}
+
+@media (max-width: 768px) {
+  .navbar-brand {
+    position: unset;
+    margin-left: 0 !important;
+  }
+
+  .navbar-nav {
+    align-items: end !important;
+  }
+  .navbar-nav button {
+    padding-right: 0;
+  }
+
+  .navbar-logo {
+    padding-left: 56px;
+    margin-right: 0;
+  }
+}
