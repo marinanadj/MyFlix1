@@ -1,12 +1,12 @@
 {
-  "name": "myflix",
+  "name": "myflix1",
   "version": "1.0.0",
-  "description": "",
-  "main": "src/index.html",
+  "description": "client side for movie app",
+  "source": "src/index.html",
   "scripts": {
-    "start": "parcel src/index.html",
-    "build": "parcel build src/index.html",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "parcel",
+    "build": "parcel build"
   },
   "keywords": [],
   "author": "",
