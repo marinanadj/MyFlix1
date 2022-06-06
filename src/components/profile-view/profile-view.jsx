@@ -1,12 +1,16 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
-import { MovieCard } from '../movie-card/movie-card';
+import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
+
+import MovieCard from '../movie-card/movie-card';
 
 import axios from 'axios';
 
 import './profile-view.scss';
 
-import { Form, Col, Row, Button } from 'react-bootstrap';
+import { Form, Col, Row, Button, Modal } from 'react-bootstrap';
 
 export class ProfileView extends React.Component {
   constructor() {
@@ -16,21 +20,26 @@ export class ProfileView extends React.Component {
       password: '',
       email: '',
       birthday: '',
-      favoriteMovies: [],
       usernameErr: '',
       passwordErr: '',
       emailErr: '',
       editAccount: false,
+      deleteConfirm: false,
     };
 
     this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  componentDidMount() {
+    const accessToken = localStorage.getItem('token');
+    this.getUser(accessToken);
   }
 
   //asking database for pofile information
   getUser(token) {
     let user = localStorage.getItem('user');
     axios
-      .get(`http://localhost:8080/users/${user}`, {
+      .get(`https://marinanadj-53303.herokuapp.com/users/${user}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((response) => {
@@ -42,11 +51,6 @@ export class ProfileView extends React.Component {
         });
       })
       .catch((e) => console.log(e));
-  }
-
-  componentDidMount() {
-    const accessToken = localStorage.getItem('token');
-    this.getUser(accessToken);
   }
 
   //logging user out
@@ -75,41 +79,89 @@ export class ProfileView extends React.Component {
   validate() {
     let isReq = true;
     if (!this.state.username) {
-      this.setUsernameErr = 'Username Required';
+      this.setErr('usernameErr', 'Username Required');
       isReq = false;
     } else if (this.state.username.length < 2) {
-      this.setErr('setUsernameErr', 'Username must be more than 2 characters');
+      this.setErr('usernameErr', 'Username must be more than 2 characters');
       isReq = false;
+    } else {
+      this.setErr('usernameErr', '');
     }
     if (this.state.password && this.state.password.length < 6) {
-      this.setErr('setPasswordErr', 'Password must be at least 6 characters');
+      this.setErr('passwordErr', 'Password must be at least 6 characters');
       isReq = false;
+    } else {
+      this.setErr('passwordErr', '');
     }
     if (this.state.email && !this.validateEmail(this.state.email)) {
-      this.setErr('setEmailErr', ' Must use a valid Email Address');
+      this.setErr('emailErr', ' Must use a valid Email Address');
       isReq = false;
+    } else {
+      this.setErr('emailErr', '');
     }
 
     return isReq;
   }
 
+  handleOnItemClick = (param) => (e) => {
+    this.props.history.push(`/movies/${param}`);
+  };
+
   //takes users favorite movie ids and find them in the full set of movies
   //for display
-  listFavorites = (movies, favorites) => {
-    let userFavorites = movies.filter((m) =>
-      this.state.favoriteMovies.includes(m._id)
-    );
-    let favoriteCards = userFavorites.map((m) => (
-      <Col md={4} key={m._id}>
-        <MovieCard
-          movie={m}
-          favorites={favorites}
-          isFavorite={favorites.includes(m._id)}
-          updateFavorites={(mid) => this.props.updateFavorites(mid)}
-        />
-      </Col>
-    ));
+  listFavorites = (favorites) => {
+    let favoriteCards = this.props.movies
+      .filter((m) => favorites.includes(m._id))
+      .map((m) => (
+        <Col md={4} key={m._id}>
+          {/* <Link to={`/movies/${m._id}`} className="movie-opt"> */}
+          <MovieCard
+            movie={m}
+            onMovieClick={() => this.handleOnItemClick(m._id)}
+          />
+          {/* </Link> */}
+        </Col>
+      ));
     return favoriteCards;
+  };
+
+  //toggling delete state to display the modal to confim
+  deleteConfirmSetState = () => {
+    this.setState({
+      deleteConfirm: !this.state.deleteConfirm,
+    });
+  };
+
+  //shows a modal to confirm account deletion
+  deleteConfirm = () => {
+    return (
+      <Modal
+        show="true"
+        size="lg"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
+        <Modal.Header>
+          <Modal.Title id="contained-modal-title-vcenter">
+            Confirm Deletion
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>
+            Are you sure you want to delete? All data will be permanently
+            lost...
+          </p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={this.deleteConfirmSetState}>
+            Cancel
+          </Button>
+          <Button variant="danger" onClick={this.handleDeleteProfile}>
+            DELETE
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    );
   };
 
   //methods for updating user info state during editing
@@ -160,7 +212,6 @@ export class ProfileView extends React.Component {
 
   //posting user updates to database
   handleSubmit = (e) => {
-    console.log('submitted');
     e.preventDefault();
     const userName = localStorage.getItem('user');
     let token = localStorage.getItem('token');
@@ -169,7 +220,7 @@ export class ProfileView extends React.Component {
     if (isReq) {
       axios
         .put(
-          `http://localhost:8080/users/${userName}`,
+          `https://marinanadj-53303.herokuapp.com/users/${userName}`,
           {
             Username: this.state.username,
             Password: this.state.password,
@@ -199,7 +250,7 @@ export class ProfileView extends React.Component {
     const token = localStorage.getItem('token');
     axios
       .delete(
-        `http://localhost:8080/users/${userName}`,
+        `https://marinanadj-53303.herokuapp.com/users/${userName}`,
 
         { headers: { Authorization: `Bearer ${token}` } }
       )
@@ -214,16 +265,15 @@ export class ProfileView extends React.Component {
   }
 
   render() {
-    const { movies, onBackClick, accessFavorites, updateFavorites } =
-      this.props;
-    const { favoriteMovies, username, email, birthday, editAccount } =
+    const { history } = this.props;
+    const { username, email, birthday, usernameErr, passwordErr, emailErr } =
       this.state;
-
-    const favorites = accessFavorites();
 
     return (
       <div className="profile-wrapper">
         <div className="movie-view tp-movie">
+          {this.state.deleteConfirm && this.deleteConfirm()}
+
           <div className="user-info">
             <h4>User Information</h4>
             <p>Username: {username}</p>
@@ -246,7 +296,7 @@ export class ProfileView extends React.Component {
                   className="delete-account-button"
                   variant="danger"
                   type="submit"
-                  onClick={this.handleDeleteProfile}
+                  onClick={this.deleteConfirmSetState}
                 >
                   Delete Account
                 </Button>
@@ -277,7 +327,7 @@ export class ProfileView extends React.Component {
                   name="Username"
                   onChange={(e) => this.setUsername(e.target.value)}
                 />
-                {this.usernameErr && <p>{this.usernameErr}</p>}
+                {usernameErr && <p>{usernameErr}</p>}
               </Form.Group>
               <Form.Group controlId="regPassword">
                 <Form.Label>Password:</Form.Label>
@@ -286,7 +336,7 @@ export class ProfileView extends React.Component {
                   name="Password"
                   onChange={(e) => this.setPassword(e.target.value)}
                 />
-                {this.passwordErr && <p>{this.passwordErr}</p>}
+                {passwordErr && <p>{passwordErr}</p>}
               </Form.Group>
               <Form.Group controlId="regEmail">
                 <Form.Label>Email:</Form.Label>
@@ -295,7 +345,7 @@ export class ProfileView extends React.Component {
                   name="Email"
                   onChange={(e) => this.setEmail(e.target.value)}
                 />
-                {this.emailErr && <p>{this.emailErr}</p>}
+                {emailErr && <p>{emailErr}</p>}
               </Form.Group>
               <Form.Group controlId="regBirthday">
                 <Form.Label>Birthday:</Form.Label>
@@ -318,10 +368,29 @@ export class ProfileView extends React.Component {
         </div>
         {/* Showing list of favorite movies */}
         <div className="movie-view bt-movie">
-          <div>{this.state.username}'s Favorite Movies:</div>
-          <Row>{this.listFavorites(movies, favorites)}</Row>
+          <div className="cards-header">{this.state.username}'s Favorites:</div>
+          <Row>{this.listFavorites(this.props.favorites)}</Row>
         </div>
       </div>
     );
   }
 }
+
+let mapStateToProps = (state) => {
+  return {
+    movies: state.movies,
+    favorites: state.favorites,
+  };
+};
+
+export default connect(mapStateToProps)(ProfileView);
+
+ProfileView.propTypes = {
+  movies: PropTypes.arrayOf(
+    PropTypes.shape({
+      title: PropTypes.string.isRequired,
+      description: PropTypes.string.isRequired,
+      imagePath: PropTypes.string.isRequired,
+    })
+  ).isRequired,
+};

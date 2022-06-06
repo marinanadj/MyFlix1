@@ -2,43 +2,44 @@ import React from 'react';
 import axios from 'axios';
 import { BrowserRouter as Router, Route, Redirect } from 'react-router-dom';
 
+//setting up redux and bringing in actions
+import { connect } from 'react-redux';
+import { setMovies, setFavorites, setUser } from '../../actions/actions';
+
+//bootstrap imports
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 
 //adding components to the main-view
-
 import { RegistrationView } from '../registration-view/registration-view';
 import { LoginView } from '../login-view/login-view';
-import { MovieCard } from '../movie-card/movie-card';
+import MoviesList from '../movies-list/movies-list';
 import { MovieView } from '../movie-view/movie-view';
-import { DirectorView } from '../director-view/director-view';
-import { GenreView } from '../genre-view/genre-view';
-import { ProfileView } from '../profile-view/profile-view';
-import { Menubar } from '../navbar-view/navbar-view';
+import DirectorView from '../director-view/director-view';
+import GenreView from '../genre-view/genre-view';
+import ProfileView from '../profile-view/profile-view';
+import Menubar from '../navbar-view/navbar';
+import LoadingSpinner from '../spinner/spinner';
 
 import { Container } from 'react-bootstrap';
 
 //getting array of movies from remote and displaying as a list
-export class MainView extends React.Component {
+class MainView extends React.Component {
   constructor() {
     super();
     //initial state for main-view
     this.state = {
-      movies: [],
       registered: null,
-      user: null,
-      favorites: null,
     };
-    this.accessFavorites = this.accessFavorites.bind(this);
   }
 
   componentDidMount() {
+    //seeing if user is logged in
     let accessToken = localStorage.getItem('token');
     if (accessToken !== null) {
-      this.setState({
-        user: localStorage.getItem('user'),
-      });
+      this.props.setUser(localStorage.getItem('user'));
       this.getMovies(accessToken);
+      // this.getTrending(accessToken);
       this.getFavorites(accessToken);
     }
   }
@@ -46,75 +47,54 @@ export class MainView extends React.Component {
   //once authenticated - request movies from API with token - recieve array of JSONS
   getMovies(token) {
     axios
-      .get('http://localhost:8080/movies', {
+      .get('https://marinanadj-53303.herokuapp.com/movies', {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((response) => {
-        this.setState({
-          movies: response.data,
-        });
+        this.props.setMovies(response.data);
       })
       .catch((error) => {
         console.log(error);
       });
   }
 
-  //getting users favorite movies to populate icons
-  getFavorites(token) {
-    let user = localStorage.getItem('user');
+  getTrending(token) {
     axios
-      .get(`http://localhost:8080/users/${user}`, {
+      .get(`https://whatdoiwatch.herokuapp.com/trending`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((response) => {
-        console.log(response.data.FavoriteMovies);
         this.setState({
-          favorites: response.data.FavoriteMovies,
+          trending: true,
         });
+        console.log(response.data);
       })
       .catch((e) => console.log(e));
   }
 
-  //sets the selected movie state with value that is provided
-  setSelectedMovie(newSelectedMovie) {
-    this.setState({
-      selectedMovie: newSelectedMovie,
-    });
-  }
-
-  //allowing other component to reference favorite movies
-  accessFavorites() {
-    return this.state.favorites;
-  }
-
-  //allowing other components to update favorite movies list
-  updateFavorites(mid) {
-    let favArray = this.state.favorites;
-    if (!favArray) {
-      return;
-    }
-    if (favArray.includes(mid)) {
-      let index = favArray.indexOf(mid);
-      console.log(index);
-      favArray.splice(index, 1);
-      this.setState({
-        favorites: favArray,
-      });
-    } else {
-      this.setState({
-        favorites: [...this.state.favorites, mid],
-      });
-    }
+  //getting users favorite movies to populate icons
+  getFavorites(token) {
+    //hold rendering movie-list until favorites are returned
+    this.props.setFavorites('');
+    let user = localStorage.getItem('user');
+    axios
+      .get(`https://marinanadj-53303.herokuapp.com/users/${user}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((response) => {
+        this.props.movies;
+        this.props.setFavorites(response.data.FavoriteMovies);
+      })
+      .catch((e) => console.log(e));
   }
 
   //when user is verified set state to current user
   onLoggedIn(userAuth) {
-    this.setState({
-      user: userAuth.user.Username,
-    });
+    this.props.setUser(userAuth.user.Username);
     localStorage.setItem('token', userAuth.token),
       localStorage.setItem('user', userAuth.user.Username);
     this.getMovies(userAuth.token);
+    // this.getTrending(accessToken);
     this.getFavorites(userAuth.token);
   }
 
@@ -126,40 +106,45 @@ export class MainView extends React.Component {
   }
 
   render() {
-    const { movies, user, favorites } = this.state;
+    let { user, movies, favorites } = this.props;
+    let { trending } = this.state;
 
     //if a movie is selected show the Movie View details
     return (
       <Router>
         <Menubar user={user} />
         <Container>
-          <Row className="main-view justify-content-md-center">
-            <Route
-              exact
-              path="/"
-              render={() => {
-                if (!user)
-                  return (
-                    <Col>
-                      <LoginView onLoggedIn={(user) => this.onLoggedIn(user)} />
-                    </Col>
-                  );
-                if (movies.length === 0) return <div className="main-view" />;
-                if (!favorites) return <div className="main-view" />;
-
-                return movies.map((m) => (
-                  <Col md={3} key={m._id} className="mcard">
-                    <MovieCard
-                      movie={m}
-                      isFavorite={favorites.includes(m._id)}
-                      favorites={favorites}
-                      updateFavorites={(mid) => this.updateFavorites(mid)}
-                    />
+          <Route
+            exact
+            path="/"
+            render={() => {
+              if (!user)
+                return (
+                  <Col>
+                    <LoginView onLoggedIn={(user) => this.onLoggedIn(user)} />
                   </Col>
-                ));
-              }}
-            />
-
+                );
+              if (movies.length === 0)
+                return (
+                  <div className="main-view">
+                    <LoadingSpinner />
+                  </div>
+                );
+              if (!favorites) return <div className="main-view" />;
+              return (
+                <MoviesList
+                  movies={movies.filter((m) => {
+                    return !m.Trending;
+                  })}
+                  favorites={favorites}
+                  trending={movies.filter((m) => {
+                    return m.Trending;
+                  })}
+                />
+              );
+            }}
+          />
+          <Row className="main-view justify-content-sm-center">
             <Route
               path="/register"
               render={() => {
@@ -176,6 +161,12 @@ export class MainView extends React.Component {
                     <Col>
                       <LoginView onLoggedIn={(user) => this.onLoggedIn(user)} />
                     </Col>
+                  );
+                if (movies.length === 0)
+                  return (
+                    <div className="main-view">
+                      <LoadingSpinner />
+                    </div>
                   );
                 return (
                   <Col md={8}>
@@ -207,12 +198,9 @@ export class MainView extends React.Component {
                           (m) => m.Director.Name === match.params.name
                         ).Director
                       }
-                      updateFavorites={(mid) => this.updateFavorites(mid)}
-                      favorites={favorites}
                       directorMovies={movies.filter((m) => {
                         return m.Director.Name === match.params.name;
                       })}
-                      accessFavorites={this.accessFavorites}
                       onBackClick={() => history.goBack()}
                     />
                   </Col>
@@ -240,8 +228,6 @@ export class MainView extends React.Component {
                       genreMovies={movies.filter((m) => {
                         return m.Genre.Name === match.params.name;
                       })}
-                      accessFavorites={this.accessFavorites}
-                      updateFavorites={(mid) => this.updateFavorites(mid)}
                       onBackClick={() => history.goBack()}
                     />
                   </Col>
@@ -264,8 +250,6 @@ export class MainView extends React.Component {
                       history={history}
                       movies={movies}
                       user={user}
-                      accessFavorites={this.accessFavorites}
-                      updateFavorites={(mid) => this.updateFavorites(mid)}
                       onBackClick={() => history.goBack()}
                     />
                   </Col>
@@ -278,3 +262,17 @@ export class MainView extends React.Component {
     );
   }
 }
+
+let mapStateToProps = (state) => {
+  return {
+    movies: state.movies,
+    favorites: state.favorites,
+    user: state.user,
+  };
+};
+
+export default connect(mapStateToProps, {
+  setMovies,
+  setFavorites,
+  setUser,
+})(MainView);

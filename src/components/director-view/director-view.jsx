@@ -1,33 +1,38 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
-import { MovieCard } from '../movie-card/movie-card';
+import MovieCard from '../movie-card/movie-card';
 
 import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 
+import { Link } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
+
 import './director-view.scss';
 
-export class DirectorView extends React.Component {
-  render() {
-    const {
-      director,
-      onBackClick,
-      directorMovies,
-      accessFavorites,
-      updateFavorites,
-    } = this.props;
+class DirectorView extends React.Component {
+  //resetting window to top for component
+  componentDidMount() {
+    window.scrollTo(0, 0);
+  }
 
-    const favorites = accessFavorites();
+  handleOnItemClick = (param) => (e) => {
+    const { history } = withRouter;
+    this.props.history.push(`/movies/${param}`);
+  };
+
+  render() {
+    const { director, onBackClick, directorMovies, accessFavorites } =
+      this.props;
 
     //generator for movies by the same director.
     let directorCards = directorMovies.map((m) => (
-      <Col md={4} key={m._id}>
+      <Col md={3} key={m._id}>
         <MovieCard
           movie={m}
-          isFavorite={favorites.includes(m._id)}
-          favorites={favorites}
-          updateFavorites={(mid) => this.props.updateFavorites(mid)}
+          onMovieClick={() => this.handleOnItemClick(m._id)}
         />
       </Col>
     ));
@@ -36,25 +41,37 @@ export class DirectorView extends React.Component {
       <div className="director-wrapper">
         <div className="movie-view tp-movie">
           <div className="movie-genre mov-section">
-            <div>{director.Name}</div>
-            <br></br>
-            <div>{director.Bio}</div>
+            <div>
+              <h3>{director.Name}</h3>
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  onBackClick();
+                }}
+              >
+                Back
+              </Button>
+            </div>
             <br></br>
           </div>
-          <Button
-            variant="secondary"
-            onClick={() => {
-              onBackClick();
-            }}
-          >
-            Back
-          </Button>
         </div>
         <div className="movie-view bt-movie">
-          <div>{director.Name} Movies:</div>
+          {/* returning list of movies directed by current director */}
+          <div className="cards-header">
+            Also directed by {director.Name} ({directorMovies.length}):
+          </div>
           <Row>{directorCards}</Row>
         </div>
       </div>
     );
   }
 }
+
+export default withRouter(DirectorView);
+
+DirectorView.propTypes = {
+  director: PropTypes.shape({
+    Name: PropTypes.string.isRequired,
+  }).isRequired,
+  onBackClick: PropTypes.func.isRequired,
+};

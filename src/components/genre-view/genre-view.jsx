@@ -1,33 +1,36 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
-import { MovieCard } from '../movie-card/movie-card';
+import MovieCard from '../movie-card/movie-card';
 
 import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 
+import { withRouter } from 'react-router-dom';
+
 import './genre-view.scss';
 
-export class GenreView extends React.Component {
+class GenreView extends React.Component {
+  //resetting window to top for component
+  componentDidMount() {
+    window.scrollTo(0, 0);
+  }
+
+  handleOnItemClick = (param) => (e) => {
+    const { history } = withRouter;
+    this.props.history.push(`/movies/${param}`);
+  };
+
   render() {
-    const {
-      genre,
-      onBackClick,
-      genreMovies,
-      accessFavorites,
-      updateFavorites,
-    } = this.props;
-
-    const favorites = accessFavorites();
-
+    const { genre, onBackClick, genreMovies } = this.props;
+    console.log(genreMovies)
     //generator for movies of the same genre - finds them in the full list of movies
     let genreCards = genreMovies.map((m) => (
-      <Col md={4} key={m._id}>
+      <Col md={3} key={m._id}>
         <MovieCard
           movie={m}
-          isFavorite={favorites.includes(m._id)}
-          favorites={favorites}
-          updateFavorites={(mid) => this.props.updateFavorites(mid)}
+          onMovieClick={() => this.handleOnItemClick(m._id)}
         />
       </Col>
     ));
@@ -36,7 +39,9 @@ export class GenreView extends React.Component {
       <div className="genre-wrapper">
         <div className="movie-view tp-movie">
           <div className="movie-genre mov-section">
-            <div>{genre.Name}</div>
+            <div>
+              <h3>{genre.Name}</h3>
+            </div>
             <br></br>
             <span>{genre.Description}</span>
           </div>
@@ -50,10 +55,23 @@ export class GenreView extends React.Component {
           </Button>
         </div>
         <div className="movie-view bt-movie">
-          <div>{genre.Name} Movies:</div>
+          <div className="cards-header">
+            {genre.Name} ({genreMovies.length}):
+          </div>
+
           <Row>{genreCards}</Row>
         </div>
       </div>
     );
   }
 }
+
+export default withRouter(GenreView);
+
+GenreView.propTypes = {
+  genre: PropTypes.shape({
+    Name: PropTypes.string.isRequired,
+    Description: PropTypes.string.isRequired,
+  }).isRequired,
+  onBackClick: PropTypes.func.isRequired,
+};
