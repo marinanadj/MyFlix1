@@ -30617,14 +30617,11 @@ class MainView extends (0, _reactDefault.default).Component {
                                     className: "main-view",
                                     children: /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _spinnerDefault.default), {}, void 0, false, void 0, void 0)
                                 }, void 0, false, void 0, void 0);
-                                if (!favourites) return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)("div", {
-                                    className: "main-view"
-                                }, void 0, false, void 0, void 0);
                                 return /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _moviesListDefault.default), {
                                     movies: movies.filter((m)=>{
                                         return !m.Trending;
                                     }),
-                                    favorites: favorites,
+                                    favourites: favorites,
                                     trending: movies.filter((m)=>{
                                         return m.Trending;
                                     })
