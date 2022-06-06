@@ -3,8 +3,8 @@
 .movie-view {
   margin-top: 5px;
   margin-bottom: 5px;
-  color: v.$primary-color;
-  background-color: white;
+  color: white;
+  background-color: black;
   padding: 10px;
   border-radius: 5px;
 }
@@ -19,4 +19,25 @@
 
 .movie-opt button {
   width: 100%;
+}
+
+.movie-poster {
+  height: 450px;
+  margin-bottom: 5px;
+}
+
+.button-wrapper {
+  margin-top: auto;
+}
+
+@media (max-width: 768px) {
+  .movie-poster {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 430px) {
+  .movie-poster {
+    justify-content: center;
+  }
 }
