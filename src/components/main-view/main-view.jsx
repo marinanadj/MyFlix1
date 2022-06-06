@@ -130,7 +130,7 @@ class MainView extends React.Component {
                     <LoadingSpinner />
                   </div>
                 );
-              if (!favorites) return <div className="main-view" />;
+              if (!favourites) return <div className="main-view" />;
               return (
                 <MoviesList
                   movies={movies.filter((m) => {
