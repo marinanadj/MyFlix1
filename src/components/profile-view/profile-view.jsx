@@ -47,7 +47,7 @@ export class ProfileView extends React.Component {
           username: response.data.Username,
           email: response.data.Email,
           birthday: response.data.Birthday,
-          favoriteMovies: response.data.FavoriteMovies,
+          favouriteMovies: response.data.FavouriteMovies,
         });
       })
       .catch((e) => console.log(e));
@@ -111,7 +111,7 @@ export class ProfileView extends React.Component {
   //for display
   listFavorites = (favorites) => {
     let favoriteCards = this.props.movies
-      .filter((m) => favorites.includes(m._id))
+      .filter((m) => favourites.includes(m._id))
       .map((m) => (
         <Col md={4} key={m._id}>
           {/* <Link to={`/movies/${m._id}`} className="movie-opt"> */}

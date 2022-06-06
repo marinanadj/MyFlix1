@@ -46998,7 +46998,7 @@ class ProfileView extends (0, _reactDefault.default).Component {
                 username: response.data.Username,
                 email: response.data.Email,
                 birthday: response.data.Birthday,
-                favoriteMovies: response.data.FavoriteMovies
+                favouriteMovies: response.data.FavouriteMovies
             });
         }).catch((e)=>console.log(e));
     }
@@ -47045,7 +47045,7 @@ class ProfileView extends (0, _reactDefault.default).Component {
     //takes users favorite movie ids and find them in the full set of movies
     //for display
     listFavorites = (favorites)=>{
-        let favoriteCards = this.props.movies.filter((m)=>favorites.includes(m._id)).map((m)=>/*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _reactBootstrap.Col), {
+        let favoriteCards = this.props.movies.filter((m)=>favourites.includes(m._id)).map((m)=>/*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _reactBootstrap.Col), {
                 md: 4,
                 children: /*#__PURE__*/ (0, _jsxDevRuntime.jsxDEV)((0, _movieCardDefault.default), {
                     movie: m,
