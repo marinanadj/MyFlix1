@@ -66,7 +66,6 @@ class GenreView extends React.Component {
   }
 }
 
-export default withRouter(GenreView);
 
 GenreView.propTypes = {
   genre: PropTypes.shape({

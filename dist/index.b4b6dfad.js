@@ -2906,10 +2906,8 @@ class MyFlixApplication extends (0, _reactDefault.default).Component {
     }
 }
 //Finds the root of your app
-const container = document.getElementById("app-container");
-//tells react to render your app in the root Dom element
-// ReactDom.render(<MyFlixApplication />, container);
-(0, _reactDomDefault.default).render(/*#__PURE__*/ (0, _reactDefault.default).createElement(MyFlixApplication), container);
+const container = document.getElementById("app-container"); //tells react to render your app in the root Dom element
+ // ReactDom.render(<MyFlixApplication />, container);
 
   $parcel$ReactRefreshHelpers$98a3.postlude(module);
 } finally {
@@ -46795,7 +46793,6 @@ $parcel$ReactRefreshHelpers$377f.prelude(module);
 
 try {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
 var _jsxDevRuntime = require("react/jsx-dev-runtime");
 var _react = require("react");
 var _reactDefault = parcelHelpers.interopDefault(_react);
@@ -46933,7 +46930,6 @@ class GenreView extends (0, _reactDefault.default).Component {
         }, this);
     }
 }
-exports.default = _c = (0, _reactRouterDom.withRouter)(GenreView);
 GenreView.propTypes = {
     genre: (0, _propTypesDefault.default).shape({
         Name: (0, _propTypesDefault.default).string.isRequired,
@@ -46941,8 +46937,6 @@ GenreView.propTypes = {
     }).isRequired,
     onBackClick: (0, _propTypesDefault.default).func.isRequired
 };
-var _c;
-$RefreshReg$(_c, "%default%");
 
   $parcel$ReactRefreshHelpers$377f.postlude(module);
 } finally {
