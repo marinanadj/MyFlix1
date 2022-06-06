@@ -60,7 +60,7 @@ class MainView extends React.Component {
 
   getTrending(token) {
     axios
-      .get(`https://whatdoiwatch.herokuapp.com/trending`, {
+      .get(`https://marinanadj-53303.herokuapp.com/trending`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((response) => {

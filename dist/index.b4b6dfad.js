@@ -30550,7 +30550,7 @@ class MainView extends (0, _reactDefault.default).Component {
         });
     }
     getTrending(token) {
-        (0, _axiosDefault.default).get(`https://whatdoiwatch.herokuapp.com/trending`, {
+        (0, _axiosDefault.default).get(`https://marinanadj-53303.herokuapp.com/trending`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
