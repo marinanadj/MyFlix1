@@ -7,7 +7,7 @@ import { connect } from 'react-redux';
 
 import VisibilityFilterInput from '../visibility-filter-input/visibility-filter-input';
 
-import './nav-bar.scss';
+import './navbar-view.scss';
 
 //redux mapping filter to props for component
 const mapStateToProps = (state) => {

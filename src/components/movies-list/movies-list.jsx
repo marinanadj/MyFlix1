@@ -11,12 +11,12 @@ import {
 
 import { useHistory } from 'react-router-dom';
 
-import Slider from 'react-slick';
+
 
 import { connect } from 'react-redux';
 
 import { Row, Dropdown, Col } from 'react-bootstrap';
-import { ArrowUp, ArrowDown } from 'react-bootstrap-icons';
+
 
 //components to import and render
 import MovieCard from '../movie-card/movie-card';
@@ -24,8 +24,6 @@ import MovieCard from '../movie-card/movie-card';
 //styles for filters
 import './movies-list.scss';
 
-import '../../../node_modules/slick-carousel/slick/slick.css';
-import '../../../node_modules/slick-carousel/slick/slick-theme.css';
 import { Next } from 'react-bootstrap/esm/PageItem';
 
 //mapping filter and favorites to props ma
