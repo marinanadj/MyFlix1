@@ -1,5 +1,8 @@
 {
   "devDependencies": {
     "@parcel/transformer-html": "^2.6.0"
+  },
+  "dependencies": {
+    "parcel": "^2.0.0-rc.0"
   }
 }
