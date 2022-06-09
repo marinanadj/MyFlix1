@@ -38,7 +38,7 @@ export function RegistrationView(props) {
       setPasswordErr('Password required');
       isReq = false;
     } else if (password.length < 6) {
-      setPasswordErr('Password must be at least 6 characters');
+      setPasswordErr('Password must be at least 4 characters');
       isReq = false;
     }
     if (!validateEmail(email)) {

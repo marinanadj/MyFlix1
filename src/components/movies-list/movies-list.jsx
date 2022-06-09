@@ -11,12 +11,12 @@ import {
 
 import { useHistory } from 'react-router-dom';
 
-
+import Slider from 'react-slick';
 
 import { connect } from 'react-redux';
 
 import { Row, Dropdown, Col } from 'react-bootstrap';
-
+import { ArrowUp, ArrowDown } from 'react-bootstrap-icons';
 
 //components to import and render
 import MovieCard from '../movie-card/movie-card';
@@ -24,7 +24,6 @@ import MovieCard from '../movie-card/movie-card';
 //styles for filters
 import './movies-list.scss';
 
-import { Next } from 'react-bootstrap/esm/PageItem';
 
 //mapping filter and favorites to props ma
 const mapStateToProps = (state) => {
@@ -57,8 +56,6 @@ let sliderSettings = {
 function MoviesList(props) {
   const { movies, visibilityFilter, sort, trendSort, movieSort } = props;
   const [dragging, setDragging] = useState(false);
-  const [animate, setAnimate] = useState(false);
-  const [activeFilter, setActiveFilter] = useState('');
 
   //setting up to navigate to specific movie
   const history = useHistory();
@@ -81,23 +78,6 @@ function MoviesList(props) {
       }
     }
   }, []);
-
-  let trendSliderMove = useEffect(() => {
-    if (trendSlide.current) {
-      trendSlide.current.slickGoTo(0);
-      localStorage.setItem('trendSlide', 0);
-      setDragging(false);
-    }
-  }, [trendSort]);
-
-  let fullSliderMove = useEffect(() => {
-    if (totalSlide.current) {
-      totalSlide.current.slickGoTo(0);
-      localStorage.setItem('movieSlide', 0);
-
-      setDragging(false);
-    }
-  }, [movieSort]);
 
   //to prevent a click when user is dragging slider using before and after change functions
   function handleBeforeChangeTrend(curr, next) {
@@ -186,7 +166,6 @@ function MoviesList(props) {
 
   //handling the sorting click and updating the method and target of sorting
   const sortHandler = (e) => {
-    let targetSort = e.target.innerText;
     let filterOrigin = e.target.parentNode.getAttribute('filterclick');
     let filterType = e.target.getAttribute('sorttype');
 
@@ -199,6 +178,8 @@ function MoviesList(props) {
       } else {
         props.toggleTrendingSort(filterType);
       }
+      trendSlide.current.slickGoTo(0);
+      localStorage.setItem('trendSlide', 0);
     } else {
       if (props.movieSort[filterType] === undefined) {
         props.setMovieSort({
@@ -208,6 +189,8 @@ function MoviesList(props) {
       } else {
         props.toggleMovieSort(filterType);
       }
+      totalSlide.current.slickGoTo(0);
+      localStorage.setItem('movieSlide', 0);
     }
   };
 

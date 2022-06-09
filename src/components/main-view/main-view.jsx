@@ -14,7 +14,7 @@ import Col from 'react-bootstrap/Col';
 import { RegistrationView } from '../registration-view/registration-view';
 import { LoginView } from '../login-view/login-view';
 import MoviesList from '../movies-list/movies-list';
-import { MovieView } from '../movie-view/movie-view';
+import MovieView from '../movie-view/movie-view';
 import DirectorView from '../director-view/director-view';
 import GenreView from '../genre-view/genre-view';
 import ProfileView from '../profile-view/profile-view';
@@ -60,7 +60,7 @@ class MainView extends React.Component {
 
   getTrending(token) {
     axios
-      .get(`https://whatdoiwatch.herokuapp.com/trending`, {
+      .get(`https://marinanadj-53303.herokuapp.com/trending`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((response) => {

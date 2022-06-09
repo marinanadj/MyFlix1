@@ -50,7 +50,7 @@ export function LoginView(props) {
       setLoading(true);
       //sending post request to API with Username and Password
       axios
-        .post('https://whatdoiwatch.herokuapp.com/login', {
+        .post('https://marinanadj-53303.herokuapp.com//login', {
           Username: username,
           Password: password,
         })

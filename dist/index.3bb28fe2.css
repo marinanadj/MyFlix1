@@ -605,7 +605,7 @@ body {
   padding-bottom: 10px;
 }
 
-.back-btn, .movie-opt button {
+.back-btn, .movie-opt button, .reco-button {
   width: 100%;
 }
 
@@ -616,6 +616,14 @@ body {
 
 .button-wrapper {
   margin-top: auto;
+}
+
+.reco-view {
+  margin-top: 50px;
+}
+
+.recommended-wrap {
+  margin-top: 15px;
 }
 
 @media (max-width: 768px) {
