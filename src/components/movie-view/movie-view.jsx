@@ -203,7 +203,7 @@ MovieView.propTypes = {
   onBackClick: PropTypes.func.isRequired,
 };
 
-let mapStateToProps = (state) => {
+/*let mapStateToProps = (state) => {
   return {
     movies: state.movies,
   };
@@ -218,3 +218,4 @@ export default withRouter(
 // export default connect(mapStateToProps, {
 //   setMovies,
 // })(MovieView);
+*/
