@@ -1,15 +1,35 @@
-# POKEDEX simple js app
+# myFlix
 
-## Description
-This project was part of the Career Foundry Full Stack Web Development course. It's a small web application with HTML, CSS, and JavaScript that loads data from an external API and enables the viewing of data points in detail.
+**The web
+application, created with React.js and Sass, will provide users with access to information about different
+movies, directors, and genres. Users will be able to sign up, update their
+personal information, and create a list of their favorite movies. it`s based on its existing server-side code (REST API and database).
+**
 
-The app displays a searchable list of pokemon names. When the user clicks on the name of a pokemon, a modal appears displaying further details on the pokemon (image, height, weight, and types) fetched from an external API.
+## Table of Contents
 
-The app uses the following API to load information on pokemon: https://pokeapi.co/api/v2/pokemon/?limit=150
+- [Description](#description)
+- [Technologies Used](#technologies-used)
+- [Features](#features)
+- [Screenshots](#screenshots)
+- [Authors](#authors)
+- [Version History](#version-history)
 
-The app uses **Bootstrap** for styling purposes.
 
-## Key features
-* Load data from an external source (API)
-* View a list of items
-* On user action (e.g., by clicking on a list item), view details for that item
+## technologies used
+
+- React.js
+- Sass
+
+## Features
+
+## Screenshots
+
+## Authors
+
+-Marina Nadj
+
+## Version History
+
+- 0.1
+  - Initial Release
