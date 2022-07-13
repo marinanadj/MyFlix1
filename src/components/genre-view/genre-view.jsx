@@ -1,76 +1,39 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React from "react";
+import { Link } from "react-router-dom";
+import { Card, Col, Button } from "react-bootstrap";
 
-import MovieCard from '../movie-card/movie-card';
+import "./genre-view.scss";
 
-import Button from 'react-bootstrap/Button';
-import Col from 'react-bootstrap/Col';
-import Row from 'react-bootstrap/Row';
+export function GenreView({ genre, onBackClick }) {
+  console.log(genre);
+  return (
+    <Card className="genre-view">
+      <Card.Body>
+        <Col className="genre-text">
+          <span>Genre: </span>
+          <h1>{genre.Name}</h1>
+        </Col>
 
-import { withRouter } from 'react-router-dom';
+        <Col className="director-text">
+          <span>Description:</span>
+          <h4>{genre.Description}</h4>
+        </Col>
 
-import './genre-view.scss';
-
-class GenreView extends React.Component {
-  //resetting window to top for component
-  componentDidMount() {
-    window.scrollTo(0, 0);
-  }
-
-  handleOnItemClick = (param) => (e) => {
-    const { history } = withRouter;
-    this.props.history.push(`/movies/${param}`);
-  };
-
-  render() {
-    const { genre, onBackClick, genreMovies } = this.props;
-    console.log(genreMovies)
-    //generator for movies of the same genre - finds them in the full list of movies
-    let genreCards = genreMovies.map((m) => (
-      <Col md={3} key={m._id}>
-        <MovieCard
-          movie={m}
-          onMovieClick={() => this.handleOnItemClick(m._id)}
-        />
-      </Col>
-    ));
-
-    return (
-      <div className="genre-wrapper">
-        <div className="movie-view tp-movie">
-          <div className="movie-genre mov-section">
-            <div>
-              <h3>{genre.Name}</h3>
-            </div>
-            <br></br>
-            <span>{genre.Description}</span>
-          </div>
+        <Col className="justify-content-between d-flex">
           <Button
-            variant="secondary"
+            type="submit"
             onClick={() => {
               onBackClick();
             }}
           >
-            Back
+            Go back
           </Button>
-        </div>
-        <div className="movie-view bt-movie">
-          <div className="cards-header">
-            {genre.Name} ({genreMovies.length}):
-          </div>
 
-          <Row>{genreCards}</Row>
-        </div>
-      </div>
-    );
-  }
+          <Link to={`/`}>
+            <Button type="submit">Back to Overview</Button>
+          </Link>
+        </Col>
+      </Card.Body>
+    </Card>
+  );
 }
-
-
-GenreView.propTypes = {
-  genre: PropTypes.shape({
-    Name: PropTypes.string.isRequired,
-    Description: PropTypes.string.isRequired,
-  }).isRequired,
-  onBackClick: PropTypes.func.isRequired,
-};

@@ -1,221 +1,104 @@
-import React from 'react';
+import React , {useState, useEffect} from 'react';
 import axios from 'axios';
-
-import LoadingSpinner from '../spinner/spinner';
-
-import { Link } from 'react-router-dom';
-import { withRouter } from 'react-router-dom';
-
 import PropTypes from 'prop-types';
-import Button from 'react-bootstrap/Button';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
-
-import { connect } from 'react-redux';
-import { setMovies } from '../../actions/actions';
+import { Container, CardGroup, Card, ListGroup, ListGroupItem, Button, Row, Col, Image, Stack, Spinner } from 'react-bootstrap';
+import { Link, Route } from "react-router-dom";
 
 import './movie-view.scss';
-import MovieCard from '../movie-card/movie-card';
 
 //showing details once MovieCard is clicked
-class MovieView extends React.Component {
-  constructor() {
-    super();
-    //initial state for main-view
-    this.state = {
-      gettingReco: null,
-      recommended: null,
-    };
-    this.showRecos = this.showRecos.bind(this);
-  }
+export class MovieView extends React.Component {
+		
+  removeFromFavorite = (event) => {
+    event.preventDefault()
 
-  getRecos(movie) {
-    if (movie.Recommended.length > 0) {
-      this.showRecos({
-        exist: movie.Recommended,
-      });
-      return;
-    }
-    let accessToken = localStorage.getItem('token');
+    console.log('removing from favorites: ', this.props.movie, this.props.user)
+
+    const username = localStorage.getItem("user");
+    const token = localStorage.getItem("token");
+    console.log('remove auth', token)
+
     axios
-      .get(
-        `https://marinanadj-53303.herokuapp.com/recommended/${this.props.movie.odbID}`,
+      .delete(
+        `https://marinanadj-53303.herokuapp.com/users/${username}/favs/${this.props.movie._id}`,
         {
-          headers: { Authorization: `Bearer ${accessToken}` },
+          headers: { Authorization:`Bearer ${token}`}
         }
       )
-      .then((response) => {
-        this.showRecos(response.data);
+      .then(() => {
+        alert(`${this.props.movie.Title} was removed from your favorites list`);
       })
-      .catch((error) => {
-        console.log(error);
-      });
+      .catch((err) => {
+        console.log(err);
+    })
   }
 
-  showRecos(recommended) {
-    if (!recommended) return;
+  addFavorite = (event) => {
+    event.preventDefault()
 
-    let processedTV = [];
-    let existDetails = [];
+    console.log('adding to favorites: ', this.props.movie, this.props.user)
 
-    if (recommended.exist && recommended.exist.length > 0) {
-      existDetails = this.props.movies.filter((m) => {
-        if (recommended.exist.includes(m.odbID)) {
-          return m;
+    const username = localStorage.getItem("user");
+    const token = localStorage.getItem("token");
+    console.log('add auth: ', token);
+
+    axios
+      .put(
+        `https://marinanadj-53303.herokuapp.com/users/${username}/favs/${this.props.movie._id}`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` }
         }
+      )
+      .then(() => {
+        alert(`${this.props.movie.Title} was added to your favorites list`);
+      })
+      .catch((err) => {
+        console.log(err);
       });
-    }
-    if (recommended.processedTV && recommended.processedTV.length > 0) {
-      processedTV = [...recommended.processedTV];
-    }
-
-    this.setState({
-      recommended: [...existDetails, ...processedTV],
-    });
   }
 
-  //resetting window to top for component
-  componentDidMount() {
-    window.scrollTo(0, 0);
-  }
-
-  handleOnItemClick = (param) => (e) => {
-    const { history } = withRouter;
-    this.setState({
-      recommended: null,
-    });
-    this.props.history.push(`/movies/${param}`);
-  };
-
-  render() {
-    const { movie, onBackClick, movies } = this.props;
-    const { recommended, gettingReco } = this.state;
+  render () {
+    if (!this.props?.user || !this.props.movie) return <div>Something went wrong!</div>
+    const { movie } = this.props;
+    const isMovieAFavorite = this.props.user.FavoriteMovies.includes(this.props.movie._id);
 
     return (
-      <div className="movie-view">
-        <Row className="details-wrapper">
-          <Col lg={6}>
-            <div className="movie-poster d-flex">
-              <img src={movie.ImagePath} crossOrigin="anonymous" />
-            </div>
-          </Col>
-          <Col lg={6} className="d-flex flex-column">
-            <div className="movie-details align-self-center">
-              <div className="movie-title mov-section">
-                <span className="value">
-                  <h3>{movie.Title}</h3>
-                </span>
-                <span className="value">{movie.Genre.Name}</span>
-              </div>
-              <div className="movie-actors mov-section">
-                <span className="value">
-                  {movie.Actors ? movie.Actors.join(' / ') : ''}
-                </span>
-              </div>
-              <div className="movie-description mov-section">
-                <span className="value">{movie.Description}</span>
-              </div>
-              <div className="movie-director mov-section">
-                <span className="label">Director: </span>
-                <span className="value">
-                  {movie.Director.Name ? movie.Director.Name : 'N/A'}
-                </span>
-              </div>
-              <div className="movie-rating mov-section">
-                <span className="label">Rating: </span>
-                <span className="value">
-                  {movie.Rating ? movie.Rating : 'N/A'}
-                </span>
-              </div>
-            </div>
-            <div className="button-wrapper">
-              <Link to={`/genres/${movie.Genre.Name}`} className="movie-opt">
-                {movie.Genre.Name ? (
-                  <Button variant="secondary">More {movie.Genre.Name}</Button>
-                ) : (
-                  <Button disabled variant="secondary">
-                    More from this Genre
-                  </Button>
-                )}
-              </Link>
-              <Button
-                className="reco-button"
-                variant="secondary"
-                onClick={() => this.getRecos(movie)}
-              >
-                More Shows Like This
-              </Button>
-              <Button
-                variant="secondary"
-                className="back-btn"
-                onClick={() => {
-                  onBackClick();
-                }}
-              >
-                Back
-              </Button>
-            </div>
-          </Col>
-        </Row>
-
-        {recommended && recommended.length > 0 && (
-          <div className="recommended-wrap">
-            <h3>Shows Similar to {movie.Title}</h3>
-          </div>
-        )}
-        {recommended && recommended.length === 0 && (
-          <div className="recommended-wrap">
-            <h3>Sorry! Nothing to Recommened...</h3>
-          </div>
-        )}
-        <Row>
-          {recommended &&
-            recommended.length > 0 &&
-            recommended.map((m) => (
-              <Col md={4} key={m._id}>
-                <MovieCard
-                  movie={m}
-                  onMovieClick={() => this.handleOnItemClick(m._id)}
-                />
-              </Col>
-            ))}
-          {/* {recommended &&
-            recommended.length > 0 &&
-            recommended.map((m) => <RecommendedView key={m._id} movie={m} />)} */}
-        </Row>
-      </div>
-    );
+        <Container>
+            <Row>
+                <Col>
+                    <Card>
+                        <Card.Body>
+                            <Card.Img crossOrigin="*" src={movie.ImagePath} />
+                            <Card.Title>{movie.Title}</Card.Title>
+                            <Card.Text>Genre: {movie.Genre.Name}</Card.Text>
+                            <Card.Text>Synopsis: {movie.Description} </Card.Text>
+                            <Card.Text>Director: {movie.Director.Name} </Card.Text>
+                            <Card.Text> About the director: {movie.Director.Bio} </Card.Text>
+                            <Route path=".movies/:movieId" render={({ match, history }) => {
+                                return <Col md={8}>
+                                    <MovieView movie={movie.find(m => m._id === match.params.movieId)} onBackClick={() => history.goBack()} />
+                                </Col>
+                            }} />
+                            <Button
+                                variant="primary"
+                                className="custom-btn"
+                                onClick={(event) => isMovieAFavorite ? this.removeFromFavorite(event) : this.addFavorite(event)}
+                            >
+                                { isMovieAFavorite ? 'Remove From Favorites' : 'Add to favorites' }
+                            </Button>
+                            <Link to={`/directors/${movie.Director.Name}`} >
+                                <Button variant="link">Director Info</Button>
+                            </Link>
+                            <Link to={`/genres/${movie.Genre.Name}`}>
+                                <Button variant="link">Genre Info</Button>
+                            </Link>
+                        </Card.Body>
+                    </Card>
+                </Col>
+            </Row>
+        </Container>
+  );
   }
+
 }
-
-MovieView.propTypes = {
-  movie: PropTypes.shape({
-    Title: PropTypes.string.isRequired,
-    Description: PropTypes.string.isRequired,
-    Genre: PropTypes.shape({
-      Name: PropTypes.string,
-    }),
-    Director: PropTypes.shape({
-      Name: PropTypes.string,
-    }),
-  }).isRequired,
-
-  onBackClick: PropTypes.func.isRequired,
-};
-
-/*let mapStateToProps = (state) => {
-  return {
-    movies: state.movies,
-  };
-};
-
-export default withRouter(
-  connect(mapStateToProps, {
-    setMovies,
-  })(MovieView)
-);
-
-// export default connect(mapStateToProps, {
-//   setMovies,
-// })(MovieView);
-*/

@@ -1,27 +1,7 @@
-.login-form {
-    color: white;
-    height: 100%;
+#bs-override .genre-text {
+  color: #000;
+
+  h1 {
+    margin-bottom: 40px;
   }
-  
-  .login-form {
-    margin-top: 100px;
-  }
-  
-  .form-label,
-  .buttons,
-  .reg-button {
-    width: 400px;
-  }
-  
-  .reg-button button {
-    width: 400px;
-  }
-  
-  .buttons {
-    margin-top: 15px;
-  }
-  
-  .login-form button {
-    margin-bottom: 10px;
-  }
-  
+}
