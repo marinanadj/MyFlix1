@@ -1,15 +1,6 @@
 $primary-color: black;
 $secondary-color: #5846f9;
 
-html {
-  min-height: 100vh;
-  background-color: black;
-}
-
-body {
-  height: 100%;
-  background-color: $primary-color !important;
-}
 
 .btn-secondary {
   background-color: $secondary-color !important;

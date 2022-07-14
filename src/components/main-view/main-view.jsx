@@ -115,6 +115,7 @@ class MainView extends React.Component {
         console.log("Full User? --> ", this.state.fullUser)
 
         return (
+            
             <Router>
                 <MenuBar user={user} />
                 <Container>
@@ -181,6 +182,7 @@ class MainView extends React.Component {
                 </Row>
                 </Container>
             </Router>
+            
         );
     }
 }

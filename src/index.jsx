@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
-import { legacy_createStore as createStore } from "redux";
+import {  createStore } from "redux";
 import MainView from "./components/main-view/main-view";
 import moviesApp from "./reducers/reducers";
 
